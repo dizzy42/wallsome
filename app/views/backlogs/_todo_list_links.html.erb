@@ -1,0 +1,21 @@
+<%= link_to "+ To-do List", 
+            "#",
+            :class => "button",
+            :id => "new_todo_list" %>
+
+<div style="float: left; margin: 3px 10px;">
+  <form class="inline">
+    Filter
+    <%= radio_button_tag "filter", "unassigned", @filter == :unassigned, :class => "filter" %>
+    <%= label_tag "filter_unassigned", "Unassigned", :style => "display: inline;" %>
+    <%= radio_button_tag "filter", "uncompleted", @filter == :uncompleted, :class => "filter" %>
+    <%= label_tag "filter_uncompleted", "Uncompleted", :style => "display: inline;" %>
+    <%= radio_button_tag "filter", "all", @filter == :all, :class => "filter" %>
+    <%= label_tag "filter_all", "All", :style => "display: inline;" %>
+  </form>
+</div>
+
+<%= link_to "Reorder Lists", 
+            edit_project_reorder_todo_lists_path(:project_id => current_project.id, :filter => @filter),
+            :class => "button",
+            :style => "float:right; margin: 0px 19px 8px 8px;" %>

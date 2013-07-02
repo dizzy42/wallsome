@@ -1,0 +1,33 @@
+<% content_for :title do %>
+  Manage Basecamp Accounts
+<% end %>
+
+<% content_for :logo do %>
+  <h2><%= link_to "Back to Overview", basecamp_accounts_path %></h2>
+  <h1>Manage Basecamp Accounts</h1>
+<% end %>
+
+<div class="center-box">
+  <%= render :partial => "layouts/flash", :locals => { :flash => flash } %>
+  <fieldset>
+    <legend>
+      Manage Basecamp Accounts
+    </legend>
+    <%- if current_user.basecamp_users.any? -%>
+      <%- current_user.basecamp_users.each do |basecamp_user| -%>
+        <p><%= link_to "#{basecamp_user.basecamp_account.name}.basecamphq.com", projects_path(basecamp_user.basecamp_account.name) %> |
+           <%= link_to "Edit", edit_basecamp_user_path(basecamp_user) %> |
+           <%= link_to "Delete",
+                       basecamp_user_path(basecamp_user),
+                       :method => :delete,
+                       :confirm => "Are you sure you want to delete the Basecamp account?" %>
+        </p>
+      <%- end -%>
+    <%- else -%>
+      <%= render :partial => "shared/no_basecamp_account" %>
+    <%- end -%>
+    <p>
+      <%= link_to "+ Add Basecamp Account", new_basecamp_user_path %>
+    </p>
+  </fieldset>
+</div>

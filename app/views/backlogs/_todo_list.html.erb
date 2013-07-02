@@ -1,0 +1,21 @@
+<%- if list.new? -%>
+<div id="template_todo_list" class="todo_list" style="display:none;">
+<%- else -%>
+<div id="todo_list_<%= list.id %>" class="todo_list">
+<% end %>
+  <div class="todo_list_name">
+    <h3 title="<%= list.description %>"><%= list.name %></h3>
+    <%- if completed -%>
+      <span class="completed">Completed</span>
+    <%- end -%>
+    <span class="todo_list_actions">
+      <%= link_to "Edit", "#", :class => "edit_todo_list" %> |
+      <%= link_to "Delete", "#", :class => "delete_todo_list" %> |
+      <%= link_to "Open in Basecamp", current_account.url + "projects/#{current_project.id}/todo_lists/#{list.id}", :class => "go_to_basecamp" %>
+    </span>
+
+    <span data-milestone-id="<%= list.milestone_id %>" class="milestone_title" style="float:right;" title="<%= list.milestone.try(:title) %>">
+      <%= truncate(list.milestone.try(:title), :length => 40) %>
+    </span>
+  </div>
+</div>

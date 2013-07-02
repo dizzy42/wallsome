@@ -1,0 +1,5 @@
+<div id="top_menu_right">
+  <%= current_user.email %> |
+  <%= link_to 'My Info', user_path %> |
+  <%= link_to 'Logout', session_path, :method => :delete %>
+</div>

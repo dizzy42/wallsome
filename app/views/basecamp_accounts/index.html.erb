@@ -1,0 +1,30 @@
+<% content_for :title do %>
+  Select Basecamp Account
+<% end %>
+
+<% content_for :logo do %>
+  <h2>Overview</h2>
+  <h1>Select Basecamp Account</h1>
+<% end %>
+
+<%= javascript_include_tag 'dashboards' %>
+
+<div class="center-box">
+  <%= render :partial => "layouts/flash", :locals => { :flash => flash } %>
+  
+  <fieldset>
+    <legend>Please Choose a Basecamp Account</legend>
+    <%- if current_user.basecamp_users.any? -%>
+      <%- current_user.basecamp_users.each do |basecamp_user| -%>
+        <p>
+          <%= link_to basecamp_user.basecamp_account.name, projects_path(:basecamp_account_name => basecamp_user.basecamp_account.name) %>
+        </p>
+      <%- end -%>
+    <%- else -%>
+      <%= render :partial => "shared/no_basecamp_account" %>
+    <%- end -%>
+    <p>
+      <%= link_to "+ Add Basecamp Account", new_basecamp_user_path %>
+    </p>
+  </fieldset>
+</div>

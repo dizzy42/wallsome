@@ -1,0 +1,31 @@
+<div id="todo_item_dialog" title="To-do item">
+  <%= form_for TodoItem.new, :as => :todo_item, :url => "", :remote => true do |f| -%>
+    <input name="_method" type="hidden" value="post" />
+    <%= f.text_area :content, :cols => 35, :rows => 3, :style => "width: 288px;" %>
+    <p>
+      <%= f.label :responsible_party, "Who's responsible?" %>
+      <%= f.select :responsible_party, responsible_party_options(project), {}, :style => "width: 288px;" %>
+    </p>
+    <fieldset class="buttons">
+      <%= link_to "Cancel", "#", :class => "button", :id => "todo_item_dialog_cancel" %>
+      <%= link_to "Create", "#", :class => "button", :id => "todo_item_dialog_submit" %>
+    </fieldset>
+  <%- end -%>
+</div>
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  $(function() {
+    app.TodoItem.Dialog = $('#todo_item_dialog').dialog({ 
+      autoOpen: false,
+      modal: true,
+      resizable: false
+    });
+
+    app.TodoItem.Dialog.CancelButton = $('#todo_item_dialog_cancel');
+
+    app.TodoItem.Dialog.CancelButton.click(function(){
+      app.TodoItem.Dialog.dialog("close");
+      return false;
+    });
+  });
+//]]></script>

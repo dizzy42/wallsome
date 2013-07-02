@@ -1,0 +1,74 @@
+<% content_for :title do %>
+  Reorder To-do Lists
+<% end %>
+
+<div id="workspace_header">
+  <div id="workspace_header_wrapper">
+    <div id="title_and_links">
+      <% if @milestone %>
+        <%= render :partial => "milestones/milestone_title" %>
+      <% else %>
+        <h1>Backlog > Reorder To-Do Lists</h1>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%= form_tag(project_reorder_todo_lists_path(:project_id => current_project.id,
+                                             :milestone_id => @milestone && @milestone.id,
+                                             :filter => params[:filter]),
+             :method => "put",
+             :class => "reorder_todo_lists") do %>
+  <h3 style="margin-left: 155px; font-size:18px;">Reorder To-Do Lists</h3>
+  <ul id="reorder_todo_lists">
+    <%- @todo_lists.each do |list| -%>
+      <%= content_tag(:li,
+                      :id => "todo_list_#{list.id}",
+                      :class => "#{list.completed? ? 'completed' : 'not_completed'}") do %>
+        <%= list.name %>
+        <%- if list.completed? -%>
+          <span class="completed" style="float:right;">Completed</span>
+        <%- end -%>
+      <% end %>
+    <%- end -%>
+  </ul>
+  <p style="margin-left:10px;">Completed to-do lists cannot be reordered</p>
+  <%= hidden_field_tag :ordered_list_ids %>
+  <fieldset class="buttons">
+    <p style="margin-right: 185px;">
+      <%= link_to "Cancel",
+                  @cancel_link,
+                  :class => "button" %>
+      <%= submit_tag "Done", :id => "submit_reorder_todo_lists" %>
+    </p>
+  </fieldset>
+<% end %>
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  $(function() {
+    $("#reorder_todo_lists").sortable({
+      containment: 'parent',
+      items: 'li.not_completed',
+      opacity: 0.8,
+      tolerance: 'pointer'
+    }).disableSelection();
+
+    $("#submit_reorder_todo_lists").click(function(event) {
+      var orderedIds = $.makeArray(getTodoListIds($("#reorder_todo_lists")));
+      app.spinner.dialog('open');
+      $("#ordered_list_ids").val(orderedIds);
+    });
+
+    getTodoListIds = function(unorderedList) {
+      var ids = unorderedList.find(".not_completed").map(function() {
+        return todoListId($(this));
+      });
+      return ids;
+    };
+
+    todoListId = function(todoList) {
+      return todoList.attr("id").slice(10);
+    };
+
+  });
+//]]></script>

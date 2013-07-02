@@ -1,0 +1,6 @@
+<h1>
+  <%= @milestone.title_for_display(current_account) %>
+  <span class="milestone_date">
+    (<%= month_day_optional_year(@milestone.deadline) %>)
+  </span>
+</h1>

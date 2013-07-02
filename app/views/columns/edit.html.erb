@@ -1,0 +1,97 @@
+<% content_for :title do %>
+  <%= current_project.name %> &gt; Columns
+<% end %>
+
+<% content_for :head do %>
+  <%= javascript_include_tag "todo_lists", "todo_items", "comments", :cache => "wall" %>
+
+  <script type="text/javascript" charset="utf-8">
+    app.responsiblePartyMap = <%= raw responsible_party_id_to_display_name.to_json %>;
+    app.basecampAccountName = '<%= current_account.name %>';
+  </script>
+<% end %>
+
+<% content_for :logo do %>
+  <%= current_project.name %>
+<% end %>
+
+<div id="workspace_header">
+  <div id="workspace_header_wrapper">
+    <div id="title_and_links">
+      <h1>Manage Columns for Entire Project: <%= current_project.name %></h1>
+      <div id="workspace_header_links">
+      </div>
+    </div>
+
+    <div id="workspace_header_buttons">
+    </div>
+  </div>
+</div>
+
+<%= form_tag(project_columns_path(:project_id => current_project.id),
+             :method => "put",
+             :class => "manage_columns") do %>
+  <%= render :partial => "layouts/flash", :locals => { :flash => flash } %>
+  <h3 style="margin-left: 65px; font-size:18px;">Manage Columns</h3>
+  <ul id="manage_columns">
+    <li class="column not_sortable">Open</li>
+    <% @columns.each do |column| %>
+      <%= content_tag(:li,
+                      :class    => "column sortable",
+                      "data-id" => column.id) do %>
+        <%= column.name %>
+        <a href="#" class="delete" style="float: right; text-align: right;">Delete</a>
+      <% end %>
+    <% end %>
+    <li class="column not_sortable">Completed</li>
+  </ul>
+  <%= hidden_field_tag :ordered_column_ids %>
+  <fieldset class="buttons">
+    <p style="margin-right: 60px;">
+      <%= link_to "+ New Column",
+                  "#",
+                  :id    => "new_column",
+                  :class => "button" %>
+      <%= submit_tag "Done", :id => "submit_update_columns" %>
+    </p>
+  </fieldset>
+<% end %>
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  $(function() {
+    $("#manage_columns").sortable({
+      containment: 'parent',
+      items: 'li.sortable',
+      opacity: 0.8,
+      tolerance: 'pointer'
+    }).disableSelection();
+
+    $("#new_column").click(function(event) {
+      var name = prompt("Enter new column name", ""),
+      element = $("<li class='column sortable'></li>");
+      element.attr("data-id", name);
+      element.html(name + "<a href='#' class='delete' style='float:right; text-align: right;'>Delete</a>");
+      $("#manage_columns li.sortable").last().after(element);
+    });
+
+    $("#submit_update_columns").click(function(event) {
+      var orderedIds = $.makeArray(getColumnIds($("#manage_columns")));
+      app.spinner.dialog('open');
+      $("#ordered_column_ids").val(orderedIds);
+    });
+
+    $("#manage_columns .delete").click(function() {
+      $(this).closest("li").remove();
+    });
+
+
+    getColumnIds = function(unorderedList) {
+      var ids = unorderedList.find("li.sortable").map(function() {
+        return $(this).attr("data-id");
+      });
+      return ids;
+    };
+
+  });
+//]]></script>
+

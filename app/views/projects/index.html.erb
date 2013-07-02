@@ -1,0 +1,30 @@
+<% content_for :title do %>
+  Projects
+<% end %>
+
+<% content_for :logo do %>
+  <h2>
+      <%= link_to "Basecamp Account", basecamp_accounts_path %> :
+      <%= current_account.name %>
+  </h2>
+  <h1>Projects</h1>
+<% end %>
+
+<%= javascript_include_tag 'dashboards' %>
+
+<div class="center-box">
+  <%= render :partial => "layouts/flash", :locals => { :flash => flash } %>
+  
+  <% if @projects.present? %>
+    <fieldset>
+      <legend>Please Choose a Project</legend>
+        <% @projects.each do |project| %>
+          <p>
+            <%= link_to project.name, 
+                        current_project_milestones_path(:basecamp_account_name => current_account.name, :project_id => project.id) %></span>
+          </p>
+        <% end %>
+    </fieldset>
+  <% end %>
+
+</div>

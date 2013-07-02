@@ -1,0 +1,31 @@
+<% content_for :title do %>
+  <%= current_project.name %> &gt; New Milestone
+<% end %>
+
+<div id="workspace_header">
+  <div id="workspace_header_wrapper">
+    <div id="title_and_links">
+      <h1>Milestones > New Milestone</h1>
+    </div>
+  </div>
+</div>
+
+
+<%= form_for @milestone, :as => :milestone,
+            :url => project_milestones_path(:project_id => current_project.id), 
+            :html => { :style => "width: 360px" } do |f| %>
+  <fieldset>
+    <legend>New Milestone</legend>
+    <%= render :partial => "form", :locals => { :f => f } %>
+  </fieldset>
+
+  <fieldset class="buttons">
+    <p>
+      <%= link_to "Cancel", 
+                  project_milestones_path(:basecamp_account_name => current_account.name, :project_id => current_project.id), 
+                  :class => "button" %> 
+      <%= submit_tag "Create" %>
+    </p>
+  </fieldset>
+  
+<% end %>

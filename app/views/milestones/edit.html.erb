@@ -1,0 +1,35 @@
+<% content_for :title do %>
+  <%= current_project.name %> &gt; Edit Milestone
+<% end %>
+
+<div id="workspace_header">
+  <div id="workspace_header_wrapper">
+    <div id="title_and_links">
+      <h1>
+        <%= @milestone.title %>
+        <span style="margin-left: 4px; color: #5be; font-size: 12px;">
+          (<%= month_day_optional_year(@milestone.deadline) %>)
+        </span>
+      </h1>
+    </div>
+  </div>
+</div>
+
+
+<%= form_for @milestone, :as => :milestone,
+            :url => project_milestone_path(:project_id => current_project.id, :id => @milestone.id), 
+            :html => { :method => :put } do |f| %>
+  <fieldset>
+    <legend>Edit Milestone</legend>
+    <%= render :partial => "form", :locals => { :f => f } %>
+  </fieldset>
+  <fieldset class="buttons">
+    <p>
+      <%= link_to "Cancel", 
+                  project_milestone_path(current_project, @milestone, :basecamp_account_name => current_account.name), 
+                  :class => "button" %> 
+      <%= submit_tag "Update" %>
+    </p>
+  </fieldset>
+  
+<% end %>

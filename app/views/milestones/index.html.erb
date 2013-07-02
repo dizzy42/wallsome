@@ -1,0 +1,71 @@
+<%= javascript_include_tag 'dashboards' %>
+
+<% content_for :title do %>
+  <%= current_project.name %>
+<% end %>
+
+<div id="workspace_header">
+  <div id="workspace_header_wrapper">
+    <div id="title_and_links">
+      <h1>Milestones</h1>
+      <div id="workspace_header_links">
+        <form class="inline">
+          Filter
+          <%= radio_button_tag "filter", "uncompleted", @filter == :uncompleted, :class => "filter" %>
+          <%= label_tag "filter_uncompleted", "Uncompleted", :style => "display: inline;" %>
+          <%= radio_button_tag "filter", "all", @filter == :all, :class => "filter" %>
+          <%= label_tag "filter_completed", "All", :style => "display: inline;" %>
+        </form>
+      </div>
+    </div>
+
+    <div id="workspace_header_buttons">
+      <%= link_to "+ New Milestone", 
+                  new_project_milestone_path(:project_id => current_project.id, 
+                                             :basecamp_account_name => current_account.name), 
+                  :class => "button" %>
+    </div>
+  </div>
+</div>
+
+<% if @milestones.present? %>
+  <% @milestones.each do |milestone| %>
+    <div class="milestones">
+      <div class="milestone_title">
+        <h3><%= milestone.title %></h3>
+        <%- if milestone.completed? -%>
+          <span class="completed">Completed</span>
+        <%- else -%>
+          <span style="margin-left: 4px;">(<%= month_day_optional_year(milestone.deadline) %>)</span>
+        <%- end -%>
+        <span class="milestone_actions">
+          <%= link_to "Show", 
+                      project_milestone_path(current_project, milestone, :basecamp_account_name => current_account.name), 
+                      :class => "edit_todo_list" %> |
+          <%= link_to "Edit", 
+                      edit_project_milestone_path(current_project, milestone, :basecamp_account_name => current_account.name), 
+                      :class => "edit_todo_list" %> |
+          <%= link_to "Delete", project_milestone_path(current_project, milestone, :basecamp_account_name => current_account.name), 
+                      :method => :delete, 
+                      :class => "delete_todo_list" %> |
+          <%= link_to "Open in Basecamp", 
+                      basecamp_milestone_url(milestone), 
+                      :class => "go_to_basecamp" %>
+        </span>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+<div id="flash_box">
+  <%= render :partial => "layouts/flash", :locals => { :flash => flash } %>
+</div>
+<% end %>
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  $(function() {
+    $(".filter").change(function(){
+      $(this).closest('form').submit();
+      app.spinner.dialog('open');
+    });
+  });
+//]]></script>

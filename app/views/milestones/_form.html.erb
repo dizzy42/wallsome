@@ -1,0 +1,36 @@
+<% if @milestone.errors.any? %>  
+  <div id="errorExplanation">  
+    <h3 style="color:red;">
+      <%= pluralize(@milestone.errors.count, "error") %> prohibited this milestone from being saved:
+    </h3>
+      <ul>  
+      <% @milestone.errors.full_messages.each do |msg| %>  
+        <li><%= msg %></li>  
+      <% end %>  
+      </ul>  
+  </div>  
+<% end %>
+
+<p>
+  <%= f.label :title %>
+  <%= f.text_field :title, :style => "width: 332px;" %>
+</p>
+<p>
+  <%= f.label :deadline %>
+  <%= text_field_tag :deadline, @milestone.deadline.strftime("%b %d, %Y"), :size => 13, :readonly => "readonly" %>
+  <%= f.hidden_field :deadline %>
+</p>
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  $(function() {
+    $("#deadline").datepicker({
+      dateFormat: 'M dd, yy',
+      altField: '#milestone_deadline',
+      showAnim: 'slideDown',
+      showOn: 'focus',
+      constrainInput: true,
+      duration: 400
+    });
+  });
+//]]></script>
+

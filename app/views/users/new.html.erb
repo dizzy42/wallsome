@@ -1,0 +1,32 @@
+<% content_for :title do %>
+  Signup
+<% end %>
+
+<%= form_for @user, :url => user_path, :html => { :id => 'account', :style => "width: 360px" } do |form| %>
+
+  <fieldset>
+    <legend>Please create a Wallsome Account</legend>
+    <p>
+      <%= error_message_on @user, :base %>
+    </p>
+    <p>
+      <%= form.label :email, "Your Email Address" %>
+      <%= form.text_field :email, :style => "width: 332px;" %>
+      <%= error_message_on @user, :email %>
+    </p>
+    <p>
+      <%= form.label :password, "Password" %>
+      <%= form.password_field :password, :style => "width: 332px;" %>
+      <%= error_message_on @user, :password %>
+    </p>
+    <p>
+      <%= form.label :password_confirmation, "Confirm Password" %>
+      <%= form.password_field :password_confirmation, :style => "width: 332px;" %>
+      <%= error_message_on @user, :password_confirmation %>
+    </p>
+  </fieldset>
+
+  <fieldset class="buttons">
+    <%= submit_tag 'Create' %>
+  </fieldset>
+<% end %>

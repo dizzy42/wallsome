@@ -1,0 +1,42 @@
+<div id="comments_dialog" title="To-do Item Comments" style="display:none;">
+  <div id="todo_item_comments">Loading comments ...</div>
+
+  <%= form_for Comment.new, :url => "", :remote => true do |f| -%>
+    <input name="_method" type="hidden" value="post" />
+    <%= f.label :body, "Your Comment" %>
+    <%= f.text_area :body, :cols => 37, :rows => 6 %>
+    <fieldset class="buttons">
+      <%= link_to "Close", "#", :class => "button", :id => "comments_dialog_close" %>
+      <%= link_to "Create", "#", :class => "button", :id => "comments_dialog_submit" %>
+    </fieldset>
+  <%- end -%>
+
+  <%= image_tag "spinner.gif", :size => "32x32", :style => "display:none;", :id => "spinner_image" %>
+
+</div>
+
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  $(function() {
+
+    app.Comments.Dialog = $('#comments_dialog').dialog({
+      autoOpen: false,
+      modal: true,
+      resizable: false,
+      draggable: false,
+      width: 338,
+      close: function() {
+        $("#todo_item_comments").html("Loading comments ...");
+        $("#comment_body").val("");
+      }
+    });
+
+    app.Comments.Dialog.CloseButton = $('#comments_dialog_close');
+
+    app.Comments.Dialog.CloseButton.click(function(){
+      app.Comments.Dialog.dialog("close");
+      return false;
+    });
+
+  });
+//]]></script>

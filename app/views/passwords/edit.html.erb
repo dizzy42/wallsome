@@ -1,0 +1,34 @@
+<% content_for :title do %>
+  Change Password
+<% end %>
+
+<% content_for :logo do %>
+  <h2><%= link_to "Back to Overview", basecamp_accounts_path %></h2>
+  <h1>Change Password</h1>
+<% end %>
+
+<%= error_messages_for :user %>
+
+<%= form_for(:user,
+            :url => password_path(:user_id => @user.id, :token => @user.verification_token),
+            :html => { :method => :put, :style => "width: 360px" }) do |form| %>
+  <fieldset>
+    <legend>Please change your password</legend>
+    <p>
+      <%= form.label :password, "Password" %>
+      <%= form.password_field :password, :style => "width: 332px;" %>
+      <%= error_message_on @user, :password %>
+    </p>
+    <p>
+      <%= form.label :password_confirmation, "Confirm Password" %>
+      <%= form.password_field :password_confirmation, :style => "width: 332px;" %>
+      <%= error_message_on @user, :password_confirmation %>
+    </p>
+  </fieldset>
+  <fieldset class="buttons">
+    <%= link_to "Cancel", 
+                user_path, 
+                :class => "button" %> 
+    <%= submit_tag 'Change' %>
+  </fieldset>
+<% end %>

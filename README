@@ -1,0 +1,15 @@
+1. run the command line command 'bundle'
+2. bundle exec rake db:create
+3. bundle exec rake db:migrate
+4. create a file config/secrets.yml
+5. in config/secrets.yml set secret_token to 30+ crazy string
+6. in config/secrets.yml set api_token_encryption_secret to 15+ crazy string
+It should now look something like this
+
+:secret_token: 123#$%^
+:api_token_encryption_secret: 456&*^
+
+7. New accounts will need to be verified manually in the db, because we aren't sending out the email properly.
+or, you could fix the email sending.
+8. Figure out what else I forgot :)
+

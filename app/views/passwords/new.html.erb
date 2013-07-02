@@ -1,0 +1,18 @@
+<% content_for :title do %>
+  Restore Password
+<% end %>
+
+<%= form_tag('/password', :method => :post, :style => "width: 360px") do %>
+  <%= render :partial => "layouts/flash", :locals => { :flash => flash } %>
+  <fieldset>
+    <legend>Forgot your password?</legend>
+    <p>We will send you a link to restore your password. Just submit your email address below.</p>
+    <p>
+      <%= label_tag 'Email' %>
+      <%= text_field_tag 'email', '', :style => "width: 332px;" %>
+    </p>
+  </fieldset>
+  <fieldset class="buttons">
+    <div><%= submit_tag 'Submit' %></div>
+  </fieldset>
+<% end %>

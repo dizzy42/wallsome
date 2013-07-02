@@ -1,0 +1,39 @@
+<%= render :partial => "layouts/header" %>
+
+<div id="page_wrapper">
+
+  <div id="header">
+    <%= render :partial => "layouts/top_menu_right" if current_user %>
+
+    <div id="logo">
+      <%= yield :logo %>
+    </div>
+
+  </div>
+
+  <div id="workspace">
+
+    <%= yield %>
+
+  </div>
+
+  <div id="layout_footer"></div>
+
+  </div>
+
+  <div id="footer">
+
+    <div id="copyright">
+      <span id="company">Wallsome - A Scrum board for your Basecamp projects.</span>
+    </div>
+
+    <div id="footer_menu">
+    </div>
+
+    <div id="disclaimer">
+    </div>
+  </div>
+
+</div>
+
+<%= render :partial => "layouts/footer" %>

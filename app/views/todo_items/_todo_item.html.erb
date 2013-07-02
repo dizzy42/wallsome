@@ -1,0 +1,18 @@
+<%- if item.new? -%>
+<div id="template_todo_item" class="todo_item" style="display:none;">
+<%- else -%>
+<div id="todo_item_<%= item.id %>" class="todo_item <%= 'responsible_for_item' if item.responsible_party_as_object.try(:responsible_party_id) == current_person.id %>">
+<%- end -%>
+  <div class="content">
+    <p><%= item.content %></p>
+    <%= content_tag(:div,
+                    :class => "responsible_party",
+                    "data-responsible-party-id" => item.responsible_party_as_object.try(:responsible_party_id)) do %>
+      <%= item.responsible_party_as_object.try(:name_for_display) %>
+    <% end %>
+  </div>
+  <div class="todo_item_actions">
+    <%= edit_item_link %> | <%= item_comments_link %> | <%= delete_item_link %>
+  </div>
+  <%= item_comments_bubble_button(item) %>
+</div>

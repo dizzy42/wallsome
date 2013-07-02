@@ -1,0 +1,13 @@
+Follow the link below to verify your Wallsome account:
+
+<%= raw(new_verification_url(
+      :user_id => @user,
+      :token   => @user.verification_token,
+      :encode  => false)) %>
+
+
+After that, visit our getting started page to help you with the next steps:
+<%= WALLSOME_SITE_BASE_URL + "/getting_started.html" %>
+
+
+<%= render :partial => "/shared/email_footer" %>

@@ -1,0 +1,230 @@
+<% content_for :title do %>
+  <%= current_project.name %> &gt; <%= @milestone.title %>
+<% end %>
+
+<% content_for :head do %>
+  <%= javascript_include_tag "todo_lists", "todo_items", "comments", :cache => "wall" %>
+
+  <script type="text/javascript" charset="utf-8">
+    app.responsiblePartyMap = <%= raw responsible_party_id_to_display_name.to_json %>;
+    app.basecampAccountName = '<%= current_account.name %>';
+    app.currentPersonId = '<%= current_person.id %>';
+  </script>
+<% end %>
+
+<div id="workspace_header">
+  <div id="workspace_header_wrapper">
+    <div id="title_and_links">
+      <%= render :partial => "milestone_title" %>
+
+      <div id="workspace_header_links">
+        <%= link_to "Edit",
+                    edit_project_milestone_path(current_project, @milestone, :basecamp_account_name => current_account.name) %> |
+        <%= link_to "Delete",
+                    project_milestone_path(current_project, @milestone, :basecamp_account_name => current_account.name),
+                    :method => :delete,
+                    :confirm => "Are you sure you want to delete the milestone?" %> |
+        <%= link_to "Open in Basecamp",
+                    basecamp_milestone_url(@milestone),
+                    :class => "go_to_basecamp" %>
+      </div>
+    </div>
+
+    <div id="workspace_header_buttons">
+      <%= link_to "+ To-do List",
+                  "#",
+                  :class => "button",
+                  :id => "new_todo_list" %>
+      <%= link_to "Reorder Lists",
+                  edit_project_reorder_todo_lists_path(:project_id => current_project.id, :milestone_id => @milestone.id),
+                  :class => "button spinner" %>
+    </div>
+  </div>
+</div>
+
+
+<%= render :partial => 'todo_items/todo_item', :locals => { :item => TodoItem.new } %>
+<%= render :partial => 'todo_lists/todo_list', :locals => { :list => TodoList.new } %>
+<%= render :partial => 'comments/dialog' %>
+
+<!-- JavaScript at the bottom for fast page loading -->
+
+<%= javascript_include_tag "lib/json2.js",
+                           "lib/underscore.js",
+                           "lib/backbone.js",
+                           "lib/ICanHaz.js",
+                           "config.js", :cache => "backbone-lib" %>
+
+<script id="todo_item" type="text/html">
+  <div class="content">
+    <p>{{ content }}</p>
+    <div class="responsible_party" data-responsible-party-id="{{ responsible_party_id }}">
+      {{ responsible_party_name }}
+    </div>
+  </div>
+  <div class="todo_item_actions">
+    <a href="#" class="edit_todo_item">Edit</a> | <a href="#" class="todo_item_comments">Comments</a> | <a href="#" class="delete_todo_item">Delete</a>
+  </div>
+  <a href="#" class="todo_item_comments comment_icon_link" style="display: none;">
+    <img alt="Blue_comment_bubble" height="20" src="/images/blue_comment_bubble.png?1311791352" style="float: right" width="20" />
+  </a>
+</script>
+
+<script id="todo_list" type="text/html">
+  <div class="todo_list_name">
+    <h3 title="{{ description }}">{{ name }}</h3>
+    <span class="todo_list_actions">
+      <a href="#" class="button new_todo_item_link" style="background-color: #000; margin-right: 5px;">+ To-do Item</a>
+      <a href="#" class="edit_todo_list">Edit</a> |
+      <a href="#" class="delete_todo_list">Delete</a> |
+      <a href="<%= current_account.url + 'projects/{{ project_id }}/todo_lists/{{ id }}' %>" class="go_to_basecamp">Open in Basecamp</a>
+    </span>
+    <span data-milestone-id="{{ milestone_id }}" class="milestone_title" style="float:right; display:none;" title="{{ milestone_title }}">
+      {{ milestone_title }}
+    </span>
+
+  </div>
+
+  <div class="col_header_row">
+    {{#columns}}
+      <div class="col_header">{{ name }}</div>
+    {{/columns}}
+  </div>
+
+  <div class="row">
+  </div>
+</script>
+
+<%= javascript_include_tag "app.js",
+                           "routers/wall_router.js",
+                           "routers/backlog_router.js",
+                           "models/todo_item.js",
+                           "models/todo_list.js",
+                           "models/milestone.js",
+                           "models/column.js",
+                           "models/project.js",
+                           "collections/todo_items.js",
+                           "collections/todo_lists.js",
+                           "collections/columns.js",
+                           "views/backlog_todo_list.js",
+                           "views/todo_list.js",
+                           "views/todo_list_column.js",
+                           "views/todo_item.js", :cache => "backbone-app" %>
+
+<script>
+  <% todo_item_dialog_params = {
+       :project_id => current_project.id,
+       :basecamp_account_name => params[:basecamp_account_name] } %>
+  $.get('<%= todo_item_dialog_path(todo_item_dialog_params) %>', function(data) {
+    $("#workspace").append(data);
+  });
+
+  <% todo_list_dialog_params = {
+       :project_id => current_project.id,
+       :milestone_id => @milestone.id,
+       :basecamp_account_name => params[:basecamp_account_name] } %>
+  $.get("<%= todo_list_dialog_path(todo_list_dialog_params) %>", function(data) {
+    $("#workspace").append(data);
+  });
+
+  $(function() {
+    var todoLists = <%=raw @todo_lists_json %>,
+        columns   = <%=raw @columns_json %>;
+
+    wallsome.App.wallInit(columns, todoLists);
+
+    app.TodoListMethods.editTodoListBehavior($(".edit_todo_list"));
+
+    // Show spinner while loading a backlog
+    $("a.backlog").click(function(){
+      app.spinner.dialog('open');
+    });
+
+    // Adding a to-do list
+    var newTodoListLinkBehavior = function(link, showMilestoneSelector) {
+      link.click(function() {
+        if (!app.TodoList.Dialog) return false;
+        var form = app.TodoList.Dialog.find("form"),
+        formMethod = form.find("input[name='_method']"),
+        formName = app.TodoList.Dialog.find("#todo_list_name"),
+        formDescription = form.find("#todo_list_description"),
+        dialogListName = app.TodoList.Dialog.find("#todo_list_name"),
+        dialogMilestoneLabel = app.TodoList.Dialog.find("label[for='todo_list_milestone']"),
+        dialogMilestoneSelector = app.TodoList.Dialog.find("#todo_list_milestone_id");
+
+
+        var submitButton = $('#todo_list_dialog_submit');
+        submitButton.text("Create");
+
+        submitButton.unbind(); // Prevent previous handlers on the shared button from being executed
+        submitButton.click(function(event) {
+          _submit(form, dialogListName);
+          return false;
+        });
+
+        app.TodoList.Dialog.dialog('option', {
+          title: 'New to-do list',
+          open: function() {
+            if ( !showMilestoneSelector ) {
+              dialogMilestoneSelector.hide();
+              dialogMilestoneLabel.hide();
+            }
+
+            form.attr('action', '/' + app.basecampAccountName + '/todo_lists');
+            formMethod.val("post");
+            formName.val("");
+            formDescription.val("");
+          }
+        });
+
+        app.TodoList.Dialog.dialog('open');
+        dialogListName.focus();
+        return false;
+      });
+
+      var _submit = function(form, dialogListName) {
+        var name = dialogListName.val();
+        if (name) {
+          app.spinner.dialog('open');
+          _postCreate(form);
+        }
+      };
+
+      var _postCreate = function(form) {
+        $.post(form.attr("action"), form.serialize(),
+          function(response) {
+            var response = response.todo_list; // rails returns => { todo_list: {} }
+
+            app.spinner.dialog('close');
+
+            // TODO: Tim -- this is because our todo_list create returns only a subset of the needed data
+            var dialogMilestoneSelector = app.TodoList.Dialog.find("#todo_list_milestone_id"),
+                milestoneTitleText = dialogMilestoneSelector[0].options[dialogMilestoneSelector[0].selectedIndex].text;
+            if (milestoneTitleText == "None") {
+              response["milestone_title"] = "";
+              response["milestone_id"]    = null;
+            } else {
+              response["milestone_title"] = milestoneTitleText;
+              response["milestone_id"]    = dialogMilestoneSelector.val();
+            }
+
+            var singleTodoList = wallsome.App.Models.TodoList.extend({
+              urlRoot: "/" + app.basecampAccountName + "/todo_lists"
+            })
+            var todoList = new singleTodoList(response),
+                view     = new wallsome.App.Views.TodoList({ model: todoList, id: "todo_list_" + todoList.id }),
+                el       = view.render().el;
+
+            $(".todo_list").first().before(el);
+            $(el).slideDown('slow');
+
+            app.TodoList.Dialog.dialog('close');
+          }
+        );
+      };
+    };
+    newTodoListLinkBehavior($("#new_todo_list"), false);
+
+
+  });
+</script>

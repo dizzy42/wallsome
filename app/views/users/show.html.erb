@@ -1,0 +1,24 @@
+<% content_for :title do %>
+  My Info
+<% end %>
+
+<% content_for :logo do %>
+  <h2><%= link_to "Back to Overview", basecamp_accounts_path %></h2>
+  <h1>My Info</h1>
+<% end %>
+
+<div class="center-box">
+  <fieldset>
+    <legend>My Info</legend>
+    <ul>
+      <li><%= link_to "Change Password", edit_user_path %></li>
+      <li><%= link_to "Manage Basecamp Accounts", basecamp_users_path %></li>
+      <li>
+        <%= link_to "Delete My Account",
+                     user_path,
+                     :method => :delete,
+                     :confirm => "Are you sure you want to delete your Wallsome account?" %>
+      </li>
+    </ul>
+  </fieldset>
+</div>

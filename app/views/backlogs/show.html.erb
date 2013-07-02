@@ -1,0 +1,109 @@
+<% content_for :title do %>
+  <%= current_project.name %> &gt; Backlog
+<% end %>
+
+<% content_for :head do %>
+  <%= javascript_include_tag "todo_lists", "todo_items", "comments", :cache => "wall" %>
+  <%= javascript_include_tag "backlogs" %>
+
+  <script type="text/javascript" charset="utf-8">
+    app.responsiblePartyMap = <%= raw responsible_party_id_to_display_name.to_json %>;
+    app.basecampAccountName = '<%= current_account.name %>';
+  </script>
+<% end %>
+
+<% content_for :logo do %>
+  <%= current_project.name %>
+<% end %>
+
+<div id="workspace_header">
+  <div id="workspace_header_wrapper">
+    <div id="title_and_links">
+      <h1>Backlog</h1>
+      <div id="workspace_header_links">
+        <form class="inline">
+          Filter
+          <%= radio_button_tag "filter", "unassigned", @filter == :unassigned, :class => "filter" %>
+          <%= label_tag "filter_unassigned", "Unassigned", :style => "display: inline;" %>
+          <%= radio_button_tag "filter", "uncompleted", @filter == :uncompleted, :class => "filter" %>
+          <%= label_tag "filter_uncompleted", "Uncompleted", :style => "display: inline;" %>
+          <%= radio_button_tag "filter", "all", @filter == :all, :class => "filter" %>
+          <%= label_tag "filter_all", "All", :style => "display: inline;" %>
+        </form>
+      </div>
+    </div>
+
+    <div id="workspace_header_buttons">
+      <%= link_to "+ To-do List",
+                  "#",
+                  :class => "button",
+                  :id => "new_todo_list" %>
+
+      <%= link_to "Reorder Lists",
+                  edit_project_reorder_todo_lists_path(:project_id => current_project.id, :filter => @filter),
+                  :class => "button spinner" %>
+    </div>
+  </div>
+</div>
+
+<%= render :partial => 'todo_list', :locals => { :list => TodoList.new, :completed => false } %>
+
+<%= javascript_include_tag "lib/json2.js",
+                           "lib/underscore.js",
+                           "lib/backbone.js",
+                           "lib/ICanHaz.js",
+                           "config.js", :cache => "backbone-lib" %>
+
+<script id="backlog_todo_list" type="text/html">
+  <div class="todo_list_name">
+    <h3 title="{{ description }}">{{ name }}</h3>
+    <span class="todo_list_actions">
+      <a href="#" class="edit_todo_list">Edit</a> |
+      <a href="#" class="delete_todo_list">Delete</a> |
+      <a href="<%= current_account.url + 'projects/{{ project_id }}/todo_lists/{{ id }}' %>" class="go_to_basecamp">Open in Basecamp</a>
+    </span>
+    <span data-milestone-id="{{ milestone_id }}" class="milestone_title" style="float:right; display:none;" title="{{ milestone_title }}">
+      {{ milestone_title }}
+    </span>
+
+  </div>
+</script>
+
+<%= javascript_include_tag "app.js",
+                           "routers/wall_router.js",
+                           "routers/backlog_router.js",
+                           "models/todo_item.js",
+                           "models/todo_list.js",
+                           "models/milestone.js",
+                           "models/project.js",
+                           "collections/todo_items.js",
+                           "collections/todo_lists.js",
+                           "views/backlog_todo_list.js",
+                           "views/todo_list.js",
+                           "views/todo_list_column.js",
+                           "views/todo_item.js", :cache => "backbone-app" %>
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  <% todo_list_dialog_params = {
+       :project_id => current_project.id,
+       :basecamp_account_name => current_account.name } %>
+  $.get("<%= todo_list_dialog_path(todo_list_dialog_params) %>", function(data) {
+    $("#workspace").append(data);
+  });
+
+  $(function() {
+    var todoLists = <%=raw @todo_lists_json %>;
+    wallsome.App.backlogInit(todoLists);
+
+    <% if @filter == :unassigned %>
+      var showMilestoneSelector = false,
+          keepTodoListWithDifferentMilestone = false;
+    <% else %>
+      var showMilestoneSelector = true,
+          keepTodoListWithDifferentMilestone = true;
+    <% end %>
+    app.TodoListMethods.newTodoListLinkBehavior($("#new_todo_list"), showMilestoneSelector);
+    app.TodoListMethods.editTodoListBehavior($(".edit_todo_list"), keepTodoListWithDifferentMilestone);
+    app.TodoListMethods.deleteTodoListBehavior($(".delete_todo_list"));
+  });
+//]]></script>

@@ -1,0 +1,36 @@
+<div id="todo_list_dialog" title="To-do list">
+  <%= form_for TodoList.new, :as => :todo_list, :url => "", :remote => true do |f| -%>
+    <input name="_method" type="hidden" value="post" />
+    <%- if !milestone.nil? -%>
+      <input name="milestone_id" type="hidden" value="<%= milestone.id %>">
+    <%- end -%>
+    <input name="project_id" type="hidden" value="<%= project.id %>">
+    <%= f.label :name %>
+    <%= f.text_field :name, :style => "width: 322px;" %>
+    <%= f.label :description %>
+    <%= f.text_area :description, :cols => 40, :rows => 6 %>
+    <%= f.label :milestone %>
+    <%= f.select :milestone_id, milestones_options(project, milestone), {}, :style => "width: 328px;" %>
+    <fieldset class="buttons">
+      <%= link_to "Cancel", "#", :class => "button", :id => "todo_list_dialog_cancel" %>
+      <%= link_to "Create", "#", :class => "button", :id => "todo_list_dialog_submit" %>
+    </fieldset>
+  <%- end -%>
+</div>
+
+<script type="text/javascript" charset="utf-8">//<![CDATA[
+  $(function() {
+    app.TodoList.Dialog = $('#todo_list_dialog').dialog({ 
+      autoOpen: false,
+      modal: true,
+      resizable: false,
+      width: 338
+    });
+
+    var todoListDialogCancelButton = $('#todo_list_dialog_cancel');
+    todoListDialogCancelButton.click(function(){
+      app.TodoList.Dialog.dialog("close");
+      return false;
+    });
+  });  
+//]]></script>

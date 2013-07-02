@@ -1,0 +1,7 @@
+Below is a link for resetting your password:
+
+<%= raw(edit_password_url(:user_id => @user.id,
+      :token  => @user.verification_token,
+      :escape => false)) %>
+
+<%= render :partial => "/shared/email_footer" %>

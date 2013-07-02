@@ -1,0 +1,11 @@
+<p>
+  <%= form.label :account_name, raw("Your Basecamp Account Name") %>
+  <%= form.text_field :account_name, :style => "width: 220px;" %> <span>.basecamphq.com</span>
+  <%= error_message_on @basecamp_user, :account_name %>
+</p>
+
+<p>
+  <%= form.label :api_token, raw("API Token <span class=\"hint\">(see 'My info' in Basecamp)</span>") %>
+  <%= form.password_field :api_token, :style => "width: 220px;" %>
+  <%= error_message_on @basecamp_user, :api_token  %>
+</p>

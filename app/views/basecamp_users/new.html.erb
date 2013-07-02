@@ -1,0 +1,24 @@
+<% content_for :title do %>
+  Add Basecamp Account
+<% end %>
+
+<% content_for :logo do %>
+  <h2><%= link_to "Back to Overview", basecamp_accounts_path %></h2>
+  <h1>Add Basecamp Account</h1>
+<% end %>
+
+<%= form_for @basecamp_user, :html => { :id => 'account', :style => "width: 360px" } do |form| %>
+  <fieldset>
+    <legend>Add Basecamp Account</legend>
+    <%= render :partial => "form", :locals => { :form => form } %>
+  </fieldset>
+  <fieldset class="buttons">
+    <%= link_to "Cancel", :back, :class => "button" %>
+    <%= submit_tag 'Create' %>
+  </fieldset>
+  
+  <p>
+    Visit <%= link_to "Help/Support", help_path, :target => "_blank" %> if you need help with the setup.
+  </p>
+<% end %>
+
